@@ -1,12 +1,10 @@
 package ics202;
 
-public interface Queue extends Container
-{
+public interface Queue extends Container {
 
-    public abstract Object getHead();
+    Object getHead();
 
-    public abstract void enqueue(Object obj);
+    void enqueue(Object obj);
 
-    public abstract Object dequeue();
-
+    Object dequeue();
 }

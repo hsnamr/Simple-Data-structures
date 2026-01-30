@@ -2,114 +2,115 @@ package ics202;
 
 import java.util.NoSuchElementException;
 
-public abstract class AbstractTree extends AbstractContainer implements Tree
-{
-   
+public abstract class AbstractTree extends AbstractContainer implements Tree {
+
+    @Override
     public abstract Object getKey();
 
+    @Override
     public abstract Tree getSubtree(int i);
 
+    @Override
     public abstract boolean isLeaf();
 
+    @Override
     public abstract int getDegree();
 
-    protected class TreeEnumeration implements Enumeration
-    {
-		protected Stack stack;
+    protected class TreeEnumeration implements Enumeration {
 
-        public TreeEnumeration()
-        {
+        protected Stack stack;
+
+        public TreeEnumeration() {
             stack = new StackAsLinkedList();
-            if(!isEmpty())
+            if (!isEmpty()) {
                 stack.push(AbstractTree.this);
+            }
         }
-        
-        public boolean hasMoreElements()
-        {
+
+        @Override
+        public boolean hasMoreElements() {
             return !stack.isEmpty();
         }
 
-        public Object nextElement()
-        {
-            if(stack.isEmpty())
+        @Override
+        public Object nextElement() {
+            if (stack.isEmpty()) {
                 throw new NoSuchElementException();
-                
-            Tree tree = (Tree)stack.pop();
-            for(int i = tree.getDegree() - 1; i >= 0; i--)
-            {
-                Tree subtree = tree.getSubtree(i);
-                if(!subtree.isEmpty())
-                    stack.push(subtree);
             }
-
+            Tree tree = (Tree) stack.pop();
+            for (int i = tree.getDegree() - 1; i >= 0; i--) {
+                Tree subtree = tree.getSubtree(i);
+                if (!subtree.isEmpty()) {
+                    stack.push(subtree);
+                }
+            }
             return tree.getKey();
-        } 
+        }
     }
 
-	public Enumeration getEnumeration()
-    {
+    @Override
+    public Enumeration getEnumeration() {
         return new TreeEnumeration();
     }
 
-    public void depthFirstTraversal(PrePostVisitor prepostvisitor)
-    {
-        if(prepostvisitor.isDone())
+    @Override
+    public void depthFirstTraversal(PrePostVisitor prepostvisitor) {
+        if (prepostvisitor.isDone()) {
             return;
-        if(!isEmpty())
-        {
+        }
+        if (!isEmpty()) {
             prepostvisitor.preVisit(getKey());
-            for(int i = 0; i < getDegree(); i++)
+            for (int i = 0; i < getDegree(); i++) {
                 getSubtree(i).depthFirstTraversal(prepostvisitor);
-
+            }
             prepostvisitor.postVisit(getKey());
         }
     }
 
-    public void breadthFirstTraversal(Visitor visitor)
-    {
-        QueueAsLinkedList queueaslinkedlist = new QueueAsLinkedList();
-        if(!isEmpty())
-            queueaslinkedlist.enqueue(this);
-        while(!queueaslinkedlist.isEmpty() && !visitor.isDone()) 
-        {
-            Tree tree = (Tree)queueaslinkedlist.dequeue();
+    @Override
+    public void breadthFirstTraversal(Visitor visitor) {
+        QueueAsLinkedList queue = new QueueAsLinkedList();
+        if (!isEmpty()) {
+            queue.enqueue(this);
+        }
+        while (!queue.isEmpty() && !visitor.isDone()) {
+            Tree tree = (Tree) queue.dequeue();
             visitor.visit(tree.getKey());
-            
-            for(int i = 0; i < tree.getDegree(); i++)
-            {
+            for (int i = 0; i < tree.getDegree(); i++) {
                 Tree subtree = tree.getSubtree(i);
-                if(!subtree.isEmpty())
-                    queueaslinkedlist.enqueue(subtree);
+                if (!subtree.isEmpty()) {
+                    queue.enqueue(subtree);
+                }
             }
-
         }
     }
 
-    public void accept(Visitor visitor)
-    {
+    @Override
+    public void accept(Visitor visitor) {
         depthFirstTraversal(new PreOrder(visitor));
     }
 
-   
-    public int getHeight()
-    {
-        if(isEmpty())
+    @Override
+    public int getHeight() {
+        if (isEmpty()) {
             return -1;
-        int i = -1;
-        for(int j = 0; j < getDegree(); j++)
-            i = Math.max(i, getSubtree(j).getHeight());
-
-        return i + 1;
+        }
+        int max = -1;
+        for (int j = 0; j < getDegree(); j++) {
+            max = Math.max(max, getSubtree(j).getHeight());
+        }
+        return max + 1;
     }
 
-    public int getCount()
-    {
-        if(isEmpty())
+    @Override
+    public int getCount() {
+        if (isEmpty()) {
             return 0;
-        int i = 1;
-        for(int j = 0; j < getDegree(); j++)
-            i += getSubtree(j).getCount();
-
-        return i;
+        }
+        int n = 1;
+        for (int j = 0; j < getDegree(); j++) {
+            n += getSubtree(j).getCount();
+        }
+        return n;
     }
 }

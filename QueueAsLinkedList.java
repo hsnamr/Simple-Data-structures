@@ -2,76 +2,66 @@ package ics202;
 
 import java.util.NoSuchElementException;
 
-public class QueueAsLinkedList extends AbstractContainer implements Queue
-{
-	protected MyLinkedList list;
-	
-    public QueueAsLinkedList()
-    {
-        list = new MyLinkedList();
-    }
+public class QueueAsLinkedList extends AbstractContainer implements Queue {
 
-    public void purge()
-    {
+    protected final MyLinkedList list = new MyLinkedList();
+
+    @Override
+    public void purge() {
         list.purge();
         count = 0;
     }
 
-    public Object getHead()
-    {
-        if(count == 0)
+    @Override
+    public Object getHead() {
+        if (count == 0) {
             throw new ContainerEmptyException();
-        else
-            return list.getFirst();
+        }
+        return list.getFirst();
     }
 
-    public void enqueue(Object obj)
-    {
+    @Override
+    public void enqueue(Object obj) {
         list.append(obj);
         count++;
     }
 
-    public Object dequeue()
-    {
-        if(count == 0)
+    @Override
+    public Object dequeue() {
+        if (count == 0) {
             throw new ContainerEmptyException();
-        else
-        {
-            Object obj = list.getFirst();
-            list.extractFirst();
-            count--;
-            return obj;
         }
+        Object obj = list.getFirst();
+        list.extractFirst();
+        count--;
+        return obj;
     }
 
-    public Enumeration getEnumeration()
-    {
+    @Override
+    public Enumeration getEnumeration() {
         return new Enumeration() {
-        	
-        	MyLinkedList.Element position = list.getHead();
 
-            public boolean hasMoreElements()
-            {
+            private MyLinkedList.Element position = list.getHead();
+
+            @Override
+            public boolean hasMoreElements() {
                 return position != null;
             }
 
-            public Object nextElement()
-            {
-                if(position == null)
+            @Override
+            public Object nextElement() {
+                if (position == null) {
                     throw new NoSuchElementException();
-                else
-                {
-                    Object obj = position.getDatum();
-                    position = position.getNext();
-                    return obj;
                 }
+                Object obj = position.getDatum();
+                position = position.getNext();
+                return obj;
             }
-            
         };
     }
 
-    protected int compareTo(MyComparable comparable)
-    {
+    @Override
+    protected int compareTo(MyComparable comparable) {
         throw new MethodNotImplemented();
     }
 }

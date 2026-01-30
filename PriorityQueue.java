@@ -1,12 +1,10 @@
 package ics202;
 
-public interface PriorityQueue extends Container
-{
+public interface PriorityQueue extends Container {
 
-    public abstract void enqueue(MyComparable comparable);
+    void enqueue(MyComparable comparable);
 
-    public abstract MyComparable findMin();
+    MyComparable findMin();
 
-    public abstract MyComparable dequeueMin();
-
+    MyComparable dequeueMin();
 }

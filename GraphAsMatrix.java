@@ -3,127 +3,157 @@ package ics202;
 import java.util.NoSuchElementException;
 
 public class GraphAsMatrix extends AbstractGraph {
-    protected Edge matrix[][];
+
+    protected Edge[][] matrix;
 
     public GraphAsMatrix(int size) {
         super(size);
         matrix = new Edge[size][size];
     }
 
+    @Override
     protected void addEdge(Edge edge) {
         int v = edge.getV0().getNumber();
         int w = edge.getV1().getNumber();
-        if(matrix[v][w] != null)
+        if (matrix[v][w] != null) {
             throw new InvalidOperationException("duplicate edge");
-        if(v == w) {
-            throw new InvalidOperationException("loops not allowed");
-        } 
-        else {
-            matrix[v][w] = edge;
-            numberOfEdges++;
         }
+        if (v == w) {
+            throw new InvalidOperationException("loops not allowed");
+        }
+        matrix[v][w] = edge;
+        numberOfEdges++;
     }
-	
+
+    @Override
     public Enumeration getEdges() {
         return new Enumeration() {
-            protected int v;
-            protected int w;
+            private int v;
+            private int w;
 
-            { //initializer block - finds the first edge
-			  search:
-                for(v = 0; v < numberOfVertices; v++)
-                    for(w = 0; w < numberOfVertices; w++)
-                        if(matrix[v][w] != null) 
-                           break search;
-						
+            {
+                search:
+                for (v = 0; v < numberOfVertices; v++) {
+                    for (w = 0; w < numberOfVertices; w++) {
+                        if (matrix[v][w] != null) {
+                            break search;
+                        }
+                    }
+                }
             }
 
+            @Override
             public boolean hasMoreElements() {
-                return v < numberOfVertices && w < numberOfVertices;
+                return v < numberOfVertices && w < numberOfVertices && matrix[v][w] != null;
             }
 
+            @Override
             public Object nextElement() {
-                if(v >= numberOfVertices || w >= numberOfVertices)
+                if (v >= numberOfVertices || w >= numberOfVertices || matrix[v][w] == null) {
                     throw new NoSuchElementException();
+                }
                 Edge edge = matrix[v][w];
-                for(w++; w < numberOfVertices; w++)
-                    if(matrix[v][w] != null)
+                for (w++; w < numberOfVertices; w++) {
+                    if (matrix[v][w] != null) {
                         return edge;
-				    
-                for(v++; v < numberOfVertices; v++)
-                    for(w = 0; w < numberOfVertices; w++)
-                        if(matrix[v][w] != null)
+                    }
+                }
+                for (v++; v < numberOfVertices; v++) {
+                    for (w = 0; w < numberOfVertices; w++) {
+                        if (matrix[v][w] != null) {
                             return edge;
-
-               return edge;
+                        }
+                    }
+                }
+                v = numberOfVertices;
+                return edge;
             }
         };
     }
-	
-	public void purge() { //to be implemented by students
-	for(int i=0;i<numberOfVertices;numberOfVertices++)
-	  for(int j=0;j<numberOfVertices;numberOfVertices++)
-	      matrix[i][j]=null;
-	      
-	      super.purge();
-	}
-	
-	public Edge getEdge(int v, int w) { //to be implemented by students
-	   if(v < 0 || v > numberOfVertices - 1 || w < 0 || w > numberOfVertices - 1)
+
+    @Override
+    public void purge() {
+        for (int i = 0; i < numberOfVertices; i++) {
+            for (int j = 0; j < numberOfVertices; j++) {
+                matrix[i][j] = null;
+            }
+        }
+        super.purge();
+    }
+
+    @Override
+    public Edge getEdge(int v, int w) {
+        if (v < 0 || v > numberOfVertices - 1 || w < 0 || w > numberOfVertices - 1) {
             throw new IndexOutOfBoundsException();
-	     
-	     Edge edge=matrix[v][w];
-	     return edge;
-	}
-	
-	public boolean isEdge(int v, int w) {  //to be implemented by students
-	if(v < 0 || v > numberOfVertices - 1 || w < 0 || w > numberOfVertices - 1)
-			throw new IndexOutOfBoundsException();
-			
-		Edge edge=matrix[v][w];
-		if(v == edge.getV0().getNumber() && w == edge.getV1().getNumber())
-		return true;
-		else
-		return false;
-	}
-	
-	protected Enumeration getEmanatingEdges(int from) { //to be implemented by students
-	final int i = from;
-	return new Enumeration(){
-		int j=0;
-		public boolean hasMoreElements(){
-			return j<numberOfVertices;
-		}
-		public Object nextElement(){
-			Edge edge=null;
-			while(edge!=null){
-				 edge=matrix[i][j];
-				j++;
-				}
-				return edge;
-			}
-		};	
-	}
-	
-	protected Enumeration getIncidentEdges(int to) {  //to be implemented by students
-	final int j = to;
-	return new Enumeration(){
-		int i=0;
-		public boolean hasMoreElements(){
-			return i<numberOfVertices;
-		}
-		public Object nextElement(){
-			Edge edge=null;
-			while(edge!=null){
-				 edge=matrix[i][j];
-				i++;
-				}
-				return edge;
-			}
-		};	
-	}
-	
-    protected int compareTo(MyComparable comparable)  {
-        throw new MethodNotImplemented();   // you do not need to implement this.
+        }
+        return matrix[v][w];
+    }
+
+    @Override
+    public boolean isEdge(int v, int w) {
+        if (v < 0 || v > numberOfVertices - 1 || w < 0 || w > numberOfVertices - 1) {
+            throw new IndexOutOfBoundsException();
+        }
+        Edge edge = matrix[v][w];
+        return edge != null && v == edge.getV0().getNumber() && w == edge.getV1().getNumber();
+    }
+
+    @Override
+    protected Enumeration getEmanatingEdges(int from) {
+        final int i = from;
+        return new Enumeration() {
+            private int j = 0;
+
+            @Override
+            public boolean hasMoreElements() {
+                while (j < numberOfVertices && matrix[i][j] == null) {
+                    j++;
+                }
+                return j < numberOfVertices;
+            }
+
+            @Override
+            public Object nextElement() {
+                while (j < numberOfVertices && matrix[i][j] == null) {
+                    j++;
+                }
+                if (j >= numberOfVertices) {
+                    throw new NoSuchElementException();
+                }
+                return matrix[i][j++];
+            }
+        };
+    }
+
+    @Override
+    protected Enumeration getIncidentEdges(int to) {
+        final int j = to;
+        return new Enumeration() {
+            private int i = 0;
+
+            @Override
+            public boolean hasMoreElements() {
+                while (i < numberOfVertices && matrix[i][j] == null) {
+                    i++;
+                }
+                return i < numberOfVertices;
+            }
+
+            @Override
+            public Object nextElement() {
+                while (i < numberOfVertices && matrix[i][j] == null) {
+                    i++;
+                }
+                if (i >= numberOfVertices) {
+                    throw new NoSuchElementException();
+                }
+                return matrix[i++][j];
+            }
+        };
+    }
+
+    @Override
+    protected int compareTo(MyComparable comparable) {
+        throw new MethodNotImplemented();
     }
 }

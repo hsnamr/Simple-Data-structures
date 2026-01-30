@@ -32,17 +32,20 @@ public abstract class AbstractGraph extends AbstractContainer implements Graph {
             return weight;
         }
 
+		@Override
 		protected int compareTo(MyComparable comparable) {
-			//To be implemented by Students
-			GraphVertex vertex = (GraphVertex) comparable;
-			if (number == vertex.getNumber())
-				return 0;
-			else if (number < vertex.getNumber())
-				return -1;
-			else
-				return +1;    
+			if (comparable instanceof GraphVertex gv) {
+				if (number == gv.getNumber()) {
+					return 0;
+				} else if (number < gv.getNumber()) {
+					return -1;
+				} else {
+					return +1;
+				}
+			}
+			return getClass().getName().compareTo(comparable.getClass().getName());
 		}
-		
+
         public Enumeration getIncidentEdges() {
             return AbstractGraph.this.getIncidentEdges(number);
         }
@@ -83,13 +86,15 @@ public abstract class AbstractGraph extends AbstractContainer implements Graph {
 		
 		
 		
+		@Override
 		public String toString() {
-            StringBuffer stringbuffer = new StringBuffer();
-            stringbuffer.append("Vertex {" + number);
-            if(weight != null)
-                stringbuffer.append(", weight = " + weight);
-            stringbuffer.append("}");
-            return stringbuffer.toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append("Vertex {").append(number);
+            if (weight != null) {
+                sb.append(", weight = ").append(weight);
+            }
+            sb.append("}");
+            return sb.toString();
         }
 	}
 	// inner class
@@ -133,32 +138,34 @@ public abstract class AbstractGraph extends AbstractContainer implements Graph {
             return AbstractGraph.this.isDirected();
         }
 
+		@Override
 		protected int compareTo(MyComparable comparable) {
-			//To be implemented by Students
-			GraphEdge edge = (GraphEdge) comparable;
-			if (v0 < edge.getV0().getNumber())
-				return -1;
-			else if (v0 > edge.getV0().getNumber())
-				return +1;
-			else if (v1 < edge.getV1().getNumber()) // v0's are the same
-				return -1;
-			else if (v1 > edge.getV1().getNumber())
-				return +1;
-			else // both v0's and v1's are same
-				return 0;
+			if (comparable instanceof GraphEdge edge) {
+				if (v0 < edge.getV0().getNumber()) {
+					return -1;
+				} else if (v0 > edge.getV0().getNumber()) {
+					return +1;
+				} else if (v1 < edge.getV1().getNumber()) {
+					return -1;
+				} else if (v1 > edge.getV1().getNumber()) {
+					return +1;
+				} else {
+					return 0;
+				}
+			}
+			return getClass().getName().compareTo(comparable.getClass().getName());
 		}
 		
+		@Override
 		public String toString() {
-            StringBuffer stringbuffer = new StringBuffer();
-            stringbuffer.append("Edge {" + v0);
-            if(isDirected())
-                stringbuffer.append("->" + v1);
-            else
-                stringbuffer.append("--" + v1);
-            if(weight != null)
-                stringbuffer.append(", weight = " + weight);
-            stringbuffer.append("}");
-            return stringbuffer.toString();
+            StringBuilder sb = new StringBuilder();
+            sb.append("Edge {").append(v0);
+            sb.append(isDirected() ? "->" : "--").append(v1);
+            if (weight != null) {
+                sb.append(", weight = ").append(weight);
+            }
+            sb.append("}");
+            return sb.toString();
         }
     }
 

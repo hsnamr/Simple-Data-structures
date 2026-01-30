@@ -2,9 +2,9 @@ package ics202;
 
 public class MyLinkedList {
 
-	protected Element head;
+    protected Element head;
     protected Element tail;
-	
+
     public void purge() {
         head = null;
         tail = null;
@@ -23,110 +23,118 @@ public class MyLinkedList {
     }
 
     public Object getFirst() {
-        if(head == null)
+        if (head == null) {
             throw new ListEmptyException();
-        else
-            return head.datum;
+        }
+        return head.datum;
     }
 
     public Object getLast() {
-        if(tail == null)
+        if (tail == null) {
             throw new ListEmptyException();
-        else
-            return tail.datum;
+        }
+        return tail.datum;
     }
 
     public void prepend(Object obj) {
         Element element = new Element(obj, head);
-        if(head == null)
+        if (head == null) {
             tail = element;
+        }
         head = element;
     }
 
     public void append(Object obj) {
         Element element = new Element(obj, null);
-        if(head == null)
+        if (head == null) {
             head = element;
-        else
+        } else {
             tail.next = element;
+        }
         tail = element;
     }
 
     public void assign(MyLinkedList linkedlist) {
-        if(linkedlist != this) {
+        if (linkedlist != this) {
             purge();
-			Element element = linkedlist.head;
+            Element element = linkedlist.head;
             while (element != null) {
                 append(element.datum);
-				element = element.next;
-			}
+                element = element.next;
+            }
         }
     }
 
     public void extract(Object obj) {
         Element element = head;
         Element lastElement = null;
-        while(element != null && ! element.datum.equals(obj)) {
+        while (element != null && !element.datum.equals(obj)) {
             lastElement = element;
-			element = element.next;
-		}
+            element = element.next;
+        }
 
-        if(element == null)
+        if (element == null) {
             throw new IllegalArgumentException("item not found");
-        if(element == head)
+        }
+        if (element == head) {
             head = element.next;
-        else
+        } else {
             lastElement.next = element.next;
-        if(element == tail)
+        }
+        if (element == tail) {
             tail = lastElement;
+        }
     }
 
     public void extractFirst() {
-        if(head == null)
+        if (head == null) {
             throw new IllegalArgumentException("item not found");
+        }
         head = head.next;
-        if(head == null)
+        if (head == null) {
             tail = null;
+        }
     }
 
-	public void extractLast() {
-		if(tail==null)
-		throw new IllegalArgumentException("item not found");
-		
-		extract(tail.datum);
-	}
-	
-	public String toString() {
-		if(head==null)return null;
-		Element element=head;
-		boolean status=true;
-		
-		String str="{";
-		while(element!=null){
-			if(status){
-				status=false;
-			str+=element.datum;
-		}
-		else
-			str+="."+element.datum;
-			element=element.next;
-			
-		}
-			 str=str+"}";
-		return str;
-	}
+    public void extractLast() {
+        if (tail == null) {
+            throw new IllegalArgumentException("item not found");
+        }
+        extract(tail.datum);
+    }
 
-	public Element find(Object obj) {
-		Element element=head;
-		while(element!=null){
-		if(element.datum.equals(obj))
-		return element;
-		element=element.next;
-	}
-		 return null;
-	}
+    @Override
+    public String toString() {
+        if (head == null) {
+            return null;
+        }
+        StringBuilder str = new StringBuilder("{");
+        Element element = head;
+        boolean first = true;
+        while (element != null) {
+            if (!first) {
+                str.append(".");
+            }
+            str.append(element.datum);
+            first = false;
+            element = element.next;
+        }
+        str.append("}");
+        return str.toString();
+    }
 
-	public final class Element {
+    public Element find(Object obj) {
+        Element element = head;
+        while (element != null) {
+            if (element.datum.equals(obj)) {
+                return element;
+            }
+            element = element.next;
+        }
+        return null;
+    }
+
+    public final class Element {
 
         Object datum;
         Element next;
@@ -135,8 +143,8 @@ public class MyLinkedList {
             datum = obj;
             next = element;
         }
-       
-		public Object getDatum() {
+
+        public Object getDatum() {
             return datum;
         }
 
@@ -146,40 +154,41 @@ public class MyLinkedList {
 
         public void insertAfter(Object obj) {
             next = new Element(obj, next);
-            if(this == tail)
+            if (this == tail) {
                 tail = next;
+            }
         }
 
         public void insertBefore(Object obj) {
             Element element = new Element(obj, this);
-            if(this == head) {
+            if (this == head) {
                 head = element;
                 return;
             }
             Element lastElement = head;
             while (lastElement != null && lastElement.next != this) {
-				lastElement = lastElement.next;
-			}
+                lastElement = lastElement.next;
+            }
             lastElement.next = element;
         }
 
         public void extract() {
-			Element element = null;
-			if(this == head)
+            Element element = null;
+            if (this == head) {
                 head = next;
-            else {
-              	element = head;
-               	while(element != null && element.next != this) {
-					element = element.next;
-				}
-                if(element == null)
+            } else {
+                element = head;
+                while (element != null && element.next != this) {
+                    element = element.next;
+                }
+                if (element == null) {
                     throw new InvalidOperationException();
+                }
                 element.next = next;
             }
-            if(this == tail)
+            if (this == tail) {
                 tail = element;
+            }
         }
-
     }
-
 }
