@@ -62,10 +62,11 @@ public class BinaryTree extends AbstractTree {
 
     @Override
     public Tree getSubtree(int i) {
-        if (i < 0 || i > 1) {
-            throw new IndexOutOfBoundsException();
-        }
-        return i == 0 ? getLeft() : getRight();
+        return switch (i) {
+            case 0 -> getLeft();
+            case 1 -> getRight();
+            default -> throw new IndexOutOfBoundsException("Subtree index: " + i);
+        };
     }
 
     public BinaryTree getLeft() {

@@ -1,4 +1,6 @@
 package ics202;
+
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public abstract class AbstractGraph extends AbstractContainer implements Graph {
@@ -243,10 +245,8 @@ public abstract class AbstractGraph extends AbstractContainer implements Graph {
     }
 
     public void depthFirstTraversal(PrePostVisitor visitor, int start) {
-        boolean visited[] = new boolean[numberOfVertices];
-        for(int v = 0; v < numberOfVertices; v++)
-            visited[v] = false;
-
+        var visited = new boolean[numberOfVertices];
+        Arrays.fill(visited, false);
         depthFirstTraversal(visitor, vertex[start], visited);
     }
 
@@ -293,33 +293,25 @@ public abstract class AbstractGraph extends AbstractContainer implements Graph {
         return getVertices();
     }
 
-    public String toString()  {
-        final StringBuffer buffer = new StringBuffer();
-        Visitor visitor = new AbstractVisitor() {
-            public void visit(Object obj) {
-                Vertex v = (Vertex) obj;
-                buffer.append(v + "\n");
-                Edge edge;
-                
-                Enumeration p = v.getEmanatingEdges(); 
-                while (p.hasMoreElements()) {
-                    edge = (Edge) p.nextElement();
-                	buffer.append("    " + edge + "\n");
-				}
+    @Override
+    public String toString() {
+        var buffer = new StringBuilder();
+        accept(forEach(obj -> {
+            if (obj instanceof Vertex v) {
+                buffer.append(v).append("\n");
+                var p = v.getEmanatingEdges();
+                while (p.hasMoreElements())
+                    buffer.append("    ").append(p.nextElement()).append("\n");
             }
-
-        };
-        accept(visitor);
+        }));
         return "{" + buffer + "}";
     }
 
 //	Additional Methods
-	public void topologicalOrderTraversal(Visitor visitor)  {
-		int[] inDegree = new int[numberOfVertices];
-		for(int v = 0; v < numberOfVertices; v++)
-			inDegree[v] = 0;
-		
-		Enumeration p = getEdges();
+	public void topologicalOrderTraversal(Visitor visitor) {
+		var inDegree = new int[numberOfVertices];
+		Arrays.fill(inDegree, 0);
+		var p = getEdges();
 		while (p.hasMoreElements()) {
 			Edge edge = (Edge) p.nextElement();
 			Vertex to = edge.getV1();
@@ -425,10 +417,9 @@ public abstract class AbstractGraph extends AbstractContainer implements Graph {
 				return false;
 		return true;
 	}
-	public int countTraversals(){
-		boolean[] visited = new boolean[numberOfVertices];
-		for (int v=0; v<numberOfVertices; v++)
-		visited[v] = false;
+	public int countTraversals() {
+		var visited = new boolean[numberOfVertices];
+		Arrays.fill(visited, false);
 		PrintingVisitor pv=new PrintingVisitor();
 		PrePostVisitor visitor = new PreOrder(pv);
 		int count=0;
@@ -442,17 +433,16 @@ public abstract class AbstractGraph extends AbstractContainer implements Graph {
 		}
 		return count;
 	}
-	public boolean isReachable(int v, int w){
-		if(v < 0 || v > numberOfVertices - 1 ||w < 0 || w > numberOfVertices - 1 )
-		throw new IndexOutOfBoundsException();
-		Vertex vertex_v=new GraphVertex(v);
-		Vertex vertex_w=new GraphVertex(w);
-        boolean[] visited = new boolean[numberOfVertices];
-        for (int i=0; i<numberOfVertices; i++)
-        visited[i] = false;
-        MatchingVisitor mv=new MatchingVisitor(vertex_w);
-        PrePostVisitor visitor = new PreOrder(mv);
-        depthFirstTraversal(visitor, vertex_v, visited);
+	public boolean isReachable(int v, int w) {
+		if (v < 0 || v > numberOfVertices - 1 || w < 0 || w > numberOfVertices - 1)
+			throw new IndexOutOfBoundsException();
+		var vertexV = new GraphVertex(v);
+		var vertexW = new GraphVertex(w);
+		var visited = new boolean[numberOfVertices];
+		Arrays.fill(visited, false);
+		var mv = new MatchingVisitor(vertexW);
+		var visitor = new PreOrder(mv);
+		depthFirstTraversal(visitor, vertexV, visited);
         return mv.isFound();
 	}
 }

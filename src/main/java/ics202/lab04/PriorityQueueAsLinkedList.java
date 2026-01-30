@@ -10,13 +10,14 @@ public class PriorityQueueAsLinkedList extends QueueAsLinkedList {
             list.prepend(obj);
         } else {
             MyLinkedList.Element x = list.getHead();
-            while (x != null && ((MyComparable) x.getDatum()).isGE((MyComparable) obj)) {
+            // Advance while current element <= obj (min-first order)
+            while (x != null && ((MyComparable) x.getDatum()).isLE((MyComparable) obj)) {
                 x = x.getNext();
             }
             if (x == null) {
-                list.append(obj);
+                list.append(obj);  // obj is larger than all
             } else {
-                x.insertBefore(obj);
+                x.insertBefore(obj);  // insert before first element > obj
             }
         }
         count++;

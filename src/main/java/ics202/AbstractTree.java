@@ -92,25 +92,19 @@ public abstract class AbstractTree extends AbstractContainer implements Tree {
 
     @Override
     public int getHeight() {
-        if (isEmpty()) {
-            return -1;
-        }
-        int max = -1;
-        for (int j = 0; j < getDegree(); j++) {
+        if (isEmpty()) return -1;
+        var max = -1;
+        for (var j = 0; j < getDegree(); j++)
             max = Math.max(max, getSubtree(j).getHeight());
-        }
         return max + 1;
     }
 
     @Override
     public int getCount() {
-        if (isEmpty()) {
-            return 0;
-        }
-        int n = 1;
-        for (int j = 0; j < getDegree(); j++) {
+        if (isEmpty()) return 0;
+        var n = 1;
+        for (var j = 0; j < getDegree(); j++)
             n += getSubtree(j).getCount();
-        }
         return n;
     }
 }
